@@ -1,0 +1,37 @@
+# File: $HOME/.bashrc_custom
+# THIS FILE IS A USER-CUSTOM BASHRC FILE TO KEEP CLEAN THE DEFAULT ~/.barshrc FILE.
+# PUT THERE ANY CUSTOM CODE MANUALLY ADDED BY YOU
+
+# nvm Node version manager
+export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+
+# Add a new line at the end of the command prompt
+#PS1=${PS1}\\n
+PS1=${PS1%?}
+PS1=${PS1%?}\n'$ '
+
+alias docker-start='systemctl --user start docker-desktop'
+alias cbash='nvim ~/.bashrc_custom'
+alias cstartup='nvim ~/startup.sh'
+
+alias cdwm='nvim ~/suckless/dwm-flexipatch/config.h'
+alias mdwm='cd ~/suckless/dwm-flexipatch/ && sudo make clean install'
+alias cst='nvim ~/suckless/st/config.h'
+alias mst='cd ~/suckless/st/ && sudo make clean install'
+alias cdmenu='nvim ~/suckless/dmenu/config.h'
+alias mdmenu='cd ~/suckless/dmenu/ && sudo make clean install'
+
+
+alias dev='firefox --private-window http://localhost:5173/ & disown'
+alias db='nvim ~/DB/index.md'
+alias vol='jvol'
+alias blue='bluetuith'
+alias wifi='nmtui'
+alias vim='nvim'
+alias v='vim'
+alias cd='z'
+
+# import zoxide
+eval "$(zoxide init bash)"
