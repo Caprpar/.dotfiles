@@ -1,0 +1,98 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# zet — skapa en ny anteckning i inbox, lägg in mall, öppna i Neovim
+#
+# Install:
+#   mkdir -p ~/bin && nano ~/bin/zet && chmod +x ~/bin/zet
+#   export PATH="$HOME/bin:$PATH"
+#
+# Konfig:
+#   export ZET_INBOX_DIR="$HOME/notes/inbox"
+#   export ZET_EXT="md"
+
+INBOX_DIR="${ZET_INBOX_DIR:-$HOME/notes/inbox}"
+EXT="${ZET_EXT:-md}"
+
+die() {
+  echo "zet: $*" >&2
+  exit 1
+}
+
+prompt_filename() {
+  local name
+  read -r -p "Filnamn (utan .${EXT} går bra): " name
+  [[ -n "${name// /}" ]] || die "Inget filnamn angivet."
+  printf "%s" "$name"
+}
+
+slugify() {
+  # Behåll a–z/A–Z/0–9/._- och ersätt allt annat med '-'
+  # (funkar bra för filnamn; enklare än att bråka med locale/åäö-varianter)
+  echo "$1" |
+    sed -E 's/^[[:space:]]+|[[:space:]]+$//g' |
+    tr ' ' '-' |
+    sed -E 's/[^A-Za-z0-9._-]+/-/g; s/-+/-/g; s/^-|-$//g'
+}
+
+ensure_ext() {
+  local name="$1"
+  if [[ "$name" != *.* ]]; then
+    echo "${name}.${EXT}"
+  else
+    echo "$name"
+  fi
+}
+
+write_template_if_new() {
+  local file="$1"
+  [[ -e "$file" ]] && return 0
+
+  local created_iso
+  created_iso="$(date -Iseconds)"
+
+  cat >"$file" <<EOF
+---
+title: "$(basename "${file%.*}")"
+created: $created_iso
+tags: []
+---
+
+# $(basename "${file%.*}")
+
+EOF
+}
+
+main() {
+  mkdir -p "$INBOX_DIR"
+
+  local input="${1:-}"
+  if [[ -z "$input" ]]; then
+    input="$(prompt_filename)"
+  fi
+
+  local base
+  base="$(slugify "$input")"
+  [[ -n "$base" ]] || die "Filnamn blev tomt efter rensning."
+
+  base="$(ensure_ext "$base")"
+
+  # Prefixa med tidsstämpel för unika filer och sortering
+  local ts
+  ts="$(date '+%Y%m%d-%H%M%S')"
+
+  local path="$INBOX_DIR/${ts}-${base}"
+
+  write_template_if_new "$path"
+
+  # Öppna i Neovim (fallback: $EDITOR)
+  if command -v nvim >/dev/null 2>&1; then
+    exec nvim "$path"
+  elif [[ -n "${EDITOR:-}" ]]; then
+    exec "$EDITOR" "$path"
+  else
+    die "Hittar varken 'nvim' eller \$EDITOR."
+  fi
+}
+
+main "$@"
