@@ -11,6 +11,7 @@
 
 # OWN BINDINGS
 bindsym $mod+b exec firefox
+bindsym $mod+p exec pastel --color-picker gpick pick | xsel -b
 
 # INIT ON STARTUP
 exec_always --no-startup-id feh --bg-scale ~/wallpapers/winter-noon.jpg
