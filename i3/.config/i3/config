@@ -12,7 +12,8 @@
 # OWN BINDINGS
 bindsym $mod+b exec firefox
 bindsym $mod+p exec pastel --color-picker gpick pick | xsel -b
-
+bindsym $mod+y exec flameshot gui -c --path ~/screenshots
+bindsym $mod+shift+y exec flameshot screen --path ~/screenshots
 # INIT ON STARTUP
 exec_always --no-startup-id feh --bg-scale ~/wallpapers/winter-noon.jpg
 exec --no-startup-id polybar &
