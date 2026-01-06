@@ -11,12 +11,15 @@
 
 # OWN BINDINGS
 bindsym $mod+b exec firefox
-bindsym $mod+y exec flameshot gui -c --path ~/screenshots
 bindsym $mod+p exec pastel --color-picker gpick pick | pastel format hex | xsel -b
+bindsym $mod+n exec st nvim /home/caspar/notes
+bindsym $mod+y exec flameshot gui -c 
+
 bindsym $mod+shift+y exec flameshot screen --path ~/screenshots
+
 # INIT ON STARTUP
 exec_always --no-startup-id feh --bg-scale ~/wallpapers/winter-noon.jpg
-exec --no-startup-id polybar &
+exec_always --no-startup-id /home/caspar/.config/polybar/launch.sh
 exec_always xset r rate 200 35 &
 exec_always picom --config ~/.config/picom/picom.conf &
 exec_always /usr/bin/setxkbmap se &
