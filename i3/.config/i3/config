@@ -13,9 +13,10 @@
 bindsym $mod+b exec firefox
 bindsym $mod+p exec pastel --color-picker gpick pick | pastel format hex | xsel -b
 bindsym $mod+n exec st nvim /home/caspar/notes
-bindsym $mod+y exec flameshot gui -c 
 
+bindsym $mod+y exec flameshot gui -c 
 bindsym $mod+shift+y exec flameshot screen --path ~/screenshots
+bindsym $mod+u exec flameshot gui --pin
 
 # INIT ON STARTUP
 exec_always --no-startup-id feh --bg-scale ~/wallpapers/winter-noon.jpg
