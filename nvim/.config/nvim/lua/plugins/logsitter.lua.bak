@@ -1,0 +1,16 @@
+return {
+  "gaelph/logsitter.nvim",
+  dependencies = { "nvim-treesitter/nvim-treesitter" },
+  ft = { "javascript", "javascriptreact", "typescript", "typescriptreact", "go", "lua" },
+  config = function()
+    require("logsitter").setup({
+      path_format = "default", -- "default" | "short" | "fileOnly"
+      prefix = "[LOG] →",
+      separator = "→",
+    })
+  end,
+  keys = {
+    { "<leader>lg", function() require("logsitter").log() end, desc = "Insert log statement" },
+    { "<leader>lg", function() require("logsitter").log_visual() end, mode = "x", desc = "Log selection" },
+  },
+}

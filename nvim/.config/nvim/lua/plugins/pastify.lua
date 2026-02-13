@@ -6,7 +6,7 @@ return {
       opts = {
         absolute_path = false, -- use absolute or relative path to the working directory
         apikey = "", -- Api key, required for online saving
-        local_path = "/notes/assets", -- The path to put local files in, ex <cwd>/assets/images/<filename>.png
+        local_path = "/assets", -- The path to put local files in, ex <cwd>/assets/images/<filename>.png
         save = "local", -- Either 'local' or 'online' or 'local_file'
         filename = "", -- The file name to save the image as, if empty pastify will ask for a name
         -- Example function for the file name that I like to use:

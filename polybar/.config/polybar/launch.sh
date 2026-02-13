@@ -6,11 +6,10 @@ polybar-msg cmd quit
 # Otherwise you can use the nuclear option:
 # killall -q polybar
 
-# Launch bar1 and bar2
-echo "---" | tee -a /tmp/polybar1.log /tmp/polybar2.log
-polybar caspar 2>&1 | tee -a /tmp/polybar1.log &
-disown
-# polybar bar2 2>&1 | tee -a /tmp/polybar2.log &
-# disown
+# Launch a bar on each monitor
+for m in $(polybar --list-monitors | cut -d":" -f1); do
+  MONITOR=$m polybar caspar 2>&1 | tee -a /tmp/polybar-$m.log &
+  disown
+done
 
 echo "Bars launched..."
