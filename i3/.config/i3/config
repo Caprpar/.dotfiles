@@ -19,9 +19,10 @@ bindsym $mod+y exec flameshot gui -c
 bindsym $mod+shift+y exec flameshot screen --path ~/screenshots
 bindsym $mod+u exec flameshot gui --pin
 
-bindsym $mod+o exec obs --startrecording
+# bindsym $mod+o exec obs --startrecording
 # INIT ON STARTUP
-exec_always --no-startup-id feh --bg-scale ~/wallpapers/winter-noon.jpg
+# exec_always --no-startup-id feh --bg-scale ~/wallpapers/winter-noon.jpg
+exec_always --no-startup-id feh --bg-scale ~/wallpapers/pink-sunrise.jpg
 exec_always --no-startup-id /home/caspar/.config/polybar/launch.sh
 exec_always xset r rate 200 35 &
 exec_always picom --config ~/.config/picom/picom.conf &
@@ -42,11 +43,6 @@ font pango:CaskaydiaCove Nerd Font 9
 # Border on focused window
 default_border pixel 0
 
-# class                 border  backgr. text    indicator child_border
-# client.focused          #5e81ac #285577 #ffffff #5e81ac   #5e81ac
-# client.unfocused        #222222 #222222 #888888 #222222   #222222
-# client.focused_inactive #333333 #222222 #ffffff #333333   #333333
-
 # Start XDG autostart .desktop files using dex. See also
 # https://wiki.archlinux.org/index.php/XDG_Autostart
 exec --no-startup-id dex --autostart --environment i3
@@ -56,7 +52,8 @@ exec --no-startup-id dex --autostart --environment i3
 
 # xss-lock grabs a logind suspend inhibit lock and will use i3lock to lock the
 # screen before suspend. Use loginctl lock-session to lock your screen.
-exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
+exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork -c 222030 --tiling
+
 
 # NetworkManager is the most popular way to manage wireless networks on Linux,
 # and nm-applet is a desktop environment-independent system tray GUI for it.
@@ -82,6 +79,8 @@ tiling_drag modifier titlebar
 
 # start a terminal
 bindsym $mod+Return exec st
+bindsym $mod+Shift+Return exec st -c floating-st
+for_window [class="floating-st"] floating enable
 
 # kill focused window
 bindsym $mod+Shift+q kill
