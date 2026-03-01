@@ -10,3 +10,10 @@
 -- Exit insert mode med jk
 vim.keymap.set("i", "jk", "<Esc>", { silent = true, desc = "Exit insert mode" })
 vim.keymap.set("i", "<Esc>", "<Nop>", { silent = true, desc = "Disable Esc in insert mode" })
+
+-- Navigate git hunks with H and L
+vim.keymap.set("n", "H", "[h", { remap = true, desc = "Previous git hunk" })
+vim.keymap.set("n", "L", "]h", { remap = true, desc = "Next git hunk" })
+
+-- vim.keymap.set("n", "<C-u>", "<C-u>zz", { remap = true, desc = "Half page up, center cursor" })
+-- vim.keymap.set("n", "<C-d>", "<C-d>zz", { remap = true, desc = "Half page down, center cursor" })
