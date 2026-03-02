@@ -1,0 +1,13 @@
+background_opacity 0.95
+enable_audio_bell no
+font_size 11.0
+
+allow_remote_control yes
+listen_on unix:@mykitty
+
+window_padding_width 2 4
+
+font_family      family='Cascadia Mono' variable_name=CascadiaMonoRoman style=Regular
+bold_font        family='Cascadia Mono' variable_name=CascadiaMonoRoman style=Bold
+italic_font      family='Cascadia Mono' variable_name='' style=Italic
+bold_italic_font family='Cascadia Mono' variable_name='' style='Bold Italic' 
