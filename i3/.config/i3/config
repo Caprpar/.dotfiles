@@ -10,9 +10,9 @@
 # Please see https://i3wm.org/docs/userguide.html for a complete reference!
 
 # OWN BINDINGS
-bindsym $mod+b exec firefox
+bindsym $mod+b exec firefox-developer-edition
 bindsym $mod+p exec pastel --color-picker gpick pick | pastel format hex | xsel -b
-bindsym $mod+n exec cd /home/caspar/notes && st nvim /home/caspar/notes
+bindsym $mod+n exec cd /home/caspar/notes && kitty nvim /home/caspar/notes
 bindcode $mod+47 exec "setxkbmap -query | grep -q 'layout:.*se' && setxkbmap us || setxkbmap se"
 
 bindsym $mod+y exec flameshot gui -c 
@@ -28,6 +28,7 @@ exec_always xset r rate 200 35 &
 exec_always picom --config ~/.config/picom/picom.conf &
 exec_always /usr/bin/setxkbmap se &
 exec_always --no-startup-id /home/caspar/scripts/alternating_layouts.py
+exec_always --no-startup-id /home/caspar/scripts/battery.sh
 
 # Set mod key
 set $mod Mod4
@@ -78,7 +79,7 @@ floating_modifier $mod
 tiling_drag modifier titlebar
 
 # start a terminal
-bindsym $mod+Return exec st
+bindsym $mod+Return exec kitty
 bindsym $mod+Shift+Return exec st -c floating-st
 for_window [class="floating-st"] floating enable
 
