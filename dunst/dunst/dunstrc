@@ -1,0 +1,19 @@
+[global]
+font =  CaskaydiaCove Nerd Font 10
+timeout = 5          # sekunder innan den försvinner
+width = 300
+offset = (20, 50) 
+frame_color = "#89b4fa"
+separator_color= frame
+highlight = "#89b4fa"
+
+[urgency_normal]
+background = "#1e1e2e"
+foreground = "#cdd6f4"
+timeout = 5
+
+[urgency_critical]
+background = "#1e1e2e"
+foreground = "#cdd6f4"
+frame_color = "#fab387"
+timeout = 0          # försvinner inte automatiskt
