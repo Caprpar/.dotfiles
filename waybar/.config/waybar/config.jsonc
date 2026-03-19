@@ -7,6 +7,7 @@
   "spacing": 0, // Gaps between modules (4px)
   // Choose the order of the modules
   "modules-left": [
+    "custom/archicon",
     "hyprland/workspaces",
     "hyprland/mode",
     "hyprland/scratchpad",
@@ -20,7 +21,7 @@
     "cpu",
     "network",
     "battery",
-    "clock"
+    "clock",
     // "tray"
     // "keyboard-state",
     // "power-profiles-daemon",
@@ -40,7 +41,13 @@
   //     "focused": "",
   //     "default": "",
   //   },
+  //
   // },
+  "custom/archicon": {
+    "format": "󰣇",
+    "tooltip": false,
+    "on-click": "notify-send 'I use arch btw'",
+  },
   "hyprland/mode": {
     "format": "<span style=\"italic\">{}</span>",
   },

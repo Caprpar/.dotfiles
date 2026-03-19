@@ -71,6 +71,11 @@ button:hover {
   border-top: 2px solid #3a3e50;
 }
 
+#custom-archicon {
+  padding: 0 12px;
+  /* font-size: 16px; */
+}
+
 #mode {
   background-color: #64727d;
 }
