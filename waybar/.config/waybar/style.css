@@ -75,14 +75,21 @@ button:hover {
   background-color: #64727d;
 }
 
-#pulseaudio,
-#network,
-#memory,
-#cpu,
+/*  { */
+/*   padding: 0 10px; */
+/*   margin: 0 1px; */
+/* } */
+#clock,
 #battery,
-#clock {
-  padding: 0 10px;
-  margin: 0 1px;
+#network,
+#cpu,
+#memory {
+  padding-left: 8px;
+  padding-right: 12px;
+}
+#pulseaudio {
+  padding-left: 8px;
+  padding-right: 10px;
 }
 
 /* you can set a style on hover for any module like this */
