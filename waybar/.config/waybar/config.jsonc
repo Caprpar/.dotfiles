@@ -21,7 +21,7 @@
     "cpu",
     "network",
     "battery",
-    "clock",
+    "clock"
     // "tray"
     // "keyboard-state",
     // "power-profiles-daemon",

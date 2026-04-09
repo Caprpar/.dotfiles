@@ -17,3 +17,11 @@ vim.keymap.set("n", "L", "]h", { remap = true, desc = "Next git hunk" })
 
 -- vim.keymap.set("n", "<C-u>", "<C-u>zz", { remap = true, desc = "Half page up, center cursor" })
 -- vim.keymap.set("n", "<C-d>", "<C-d>zz", { remap = true, desc = "Half page down, center cursor" })
+vim.keymap.set("v", "<leader>yl", function()
+  local start_line = vim.fn.line("v")
+  local end_line = vim.fn.line(".")
+  local filepath = vim.fn.expand("%:p"):gsub("^" .. os.getenv("HOME"), "~")
+  local result = filepath .. ":" .. start_line .. "-" .. end_line
+  vim.fn.setreg("+", result)
+  print("Yanked: " .. result)
+end, { desc = "Yank file location of selection" })
