@@ -8,7 +8,12 @@ polybar-msg cmd quit
 
 # Launch a bar on each monitor
 for m in $(polybar --list-monitors | cut -d":" -f1); do
-  MONITOR=$m polybar caspar 2>&1 | tee -a /tmp/polybar-$m.log &
+  case "$m" in
+  DP-1) bar="caspar-dp1" ;;
+  eDP-1) bar="caspar-edp1" ;;
+  *) bar="caspar" ;;
+  esac
+  polybar "$bar" 2>&1 | tee -a /tmp/polybar-$m.log &
   disown
 done
 
