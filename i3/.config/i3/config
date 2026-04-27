@@ -13,6 +13,10 @@
 bindsym $mod+b exec firefox-developer-edition
 bindsym $mod+p exec pastel --color-picker gpick pick | pastel format hex | xsel -b
 bindsym $mod+n exec cd /home/caspar/notes && kitty nvim 
+bindsym $mod+m exec kitty ~/.local/bin/scratch
+
+bindsym $mod+Ctrl+l exec i3lock --nofork -c 222030 --tiling
+# bindsym $mod+Ctrl+l exec i3lock --nofork -i ~/wallpapers/fingerprint.png -k
 
 # key § toggles language
 bindcode 49 exec "setxkbmap -query | grep -q 'layout:.*se' && setxkbmap us || setxkbmap se"
@@ -25,13 +29,15 @@ bindsym $mod+u exec flameshot gui --pin
 # bindsym $mod+o exec obs --startrecording
 # INIT ON STARTUP
 # exec_always --no-startup-id feh --bg-scale ~/wallpapers/winter-noon.jpg
-exec_always --no-startup-id feh --bg-scale ~/wallpapers/pink-sunrise.jpg
+# exec_always --no-startup-id feh --bg-scale ~/wallpapers/pink-sunrise.jpg
+exec_always --no-startup-id feh --bg-scale ~/wallpapers/cow-field.jpg
 exec_always --no-startup-id /home/caspar/.config/polybar/launch.sh
 exec_always xset r rate 200 35 &
 exec_always picom --config ~/.config/picom/picom.conf &
 exec_always /usr/bin/setxkbmap se &
 exec_always --no-startup-id /home/caspar/scripts/alternating_layouts.py
 exec_always --no-startup-id /home/caspar/scripts/battery.sh
+
 
 # Set mod key
 set $mod Mod4
@@ -57,6 +63,7 @@ exec --no-startup-id dex --autostart --environment i3
 # xss-lock grabs a logind suspend inhibit lock and will use i3lock to lock the
 # screen before suspend. Use loginctl lock-session to lock your screen.
 exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork -c 222030 --tiling
+# exec_always --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork -i ~/wallpapers/fingerprint.png -k
 
 
 # NetworkManager is the most popular way to manage wireless networks on Linux,
