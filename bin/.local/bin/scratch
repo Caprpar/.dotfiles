@@ -1,0 +1,15 @@
+# ~/.local/bin/scratch
+
+#!/bin/bash
+mkdir -p /tmp/scratch
+
+TIME=$(date +%H:%M:%S)
+FILE="/tmp/scratch/${TIME}.md"
+
+cat >"$FILE" <<EOF
+# =====[ SCRATCHPAD ${TIME} ]=====
+<!-- markdownlint-disable -->
+
+EOF
+
+nvim +3 "$FILE"

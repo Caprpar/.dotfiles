@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-tmux kill-session -t server
-tmux kill-session -t lazygit
-tmux kill-session -t frontend
