@@ -30,6 +30,8 @@ vim.keymap.set("v", "<leader>wc", function()
   print("Words: " .. count_str)
 end, { desc = "Count words in selection" })
 
+vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Rename references" })
+
 vim.keymap.set("v", "<leader>yl", function()
   local start_line = vim.fn.line("v")
   local end_line = vim.fn.line(".")
