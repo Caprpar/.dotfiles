@@ -32,6 +32,15 @@ end, { desc = "Count words in selection" })
 
 vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Rename references" })
 
+vim.keymap.set("n", "gx", function()
+  local path = vim.fn.expand("<cfile>")
+  if path:match("%.png$") or path:match("%.jpg$") or path:match("%.jpeg$") or path:match("%.gif$") or path:match("%.webp$") or path:match("%.svg$") or path:match("%.bmp$") then
+    vim.fn.jobstart({ "feh", "--auto-zoom", path }, { detach = true })
+  else
+    vim.ui.open(path)
+  end
+end, { desc = "Open file or URL (images with feh)" })
+
 vim.keymap.set("v", "<leader>yl", function()
   local start_line = vim.fn.line("v")
   local end_line = vim.fn.line(".")
