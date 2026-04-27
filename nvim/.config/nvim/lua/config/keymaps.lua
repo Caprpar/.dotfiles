@@ -17,6 +17,19 @@ vim.keymap.set("n", "L", "]h", { remap = true, desc = "Next git hunk" })
 
 -- vim.keymap.set("n", "<C-u>", "<C-u>zz", { remap = true, desc = "Half page up, center cursor" })
 -- vim.keymap.set("n", "<C-d>", "<C-d>zz", { remap = true, desc = "Half page down, center cursor" })
+-- Räkna ord i markering och kopiera till klippbord
+vim.keymap.set("v", "<leader>wc", function()
+  vim.cmd('normal! "wy')
+  local text = vim.fn.getreg("w")
+  local count = 0
+  for _ in text:gmatch("%S+") do
+    count = count + 1
+  end
+  local count_str = tostring(count)
+  vim.fn.setreg("+", count_str)
+  print("Words: " .. count_str)
+end, { desc = "Count words in selection" })
+
 vim.keymap.set("v", "<leader>yl", function()
   local start_line = vim.fn.line("v")
   local end_line = vim.fn.line(".")
