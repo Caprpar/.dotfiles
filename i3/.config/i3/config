@@ -22,7 +22,7 @@ bindsym $mod+Ctrl+l exec i3lock --nofork -c 222030 --tiling
 bindcode 49 exec "setxkbmap -query | grep -q 'layout:.*se' && setxkbmap us || setxkbmap se"
 bindsym $mod+t exec xprop | grep WM_CLASS | xsel -b && notify-send "Pasted windowsclass to clipboard"
 
-bindsym $mod+y exec flameshot gui -c 
+bindsym $mod+y exec flameshot gui -c
 bindsym $mod+shift+y exec flameshot screen --path ~/screenshots
 bindsym $mod+u exec flameshot gui --pin
 
@@ -98,6 +98,8 @@ bindsym $mod+Shift+q kill
 
 # start dmenu (a program launcher)
 bindsym $mod+d exec --no-startup-id dmenu_run
+bindsym $mod+c exec --no-startup-id /home/caspar/.local/bin/dmenu-calc
+
 # A more modern dmenu replacement is rofi:
 # bindcode $mod+40 exec "rofi -modi drun,run -show drun"
 # There also is i3-dmenu-desktop which only displays applications shipping a

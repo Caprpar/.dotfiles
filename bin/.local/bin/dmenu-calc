@@ -1,0 +1,11 @@
+#!/bin/bash
+# ~/.local/bin/dmenu-calc
+
+expr=$(echo "" | dmenu -p "calc:")
+[ -z "$expr" ] && exit
+
+result=$(echo "scale=2; $expr" | bc -l 2>&1)
+
+echo -n "$result" | xclip -selection clipboard
+
+notify-send "$expr = $result" --expire-time 5000
