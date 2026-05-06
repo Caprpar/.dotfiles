@@ -1,4 +1,5 @@
 [global]
+follow = keyboard
 font =  CaskaydiaCove Nerd Font 10
 timeout = 5          # sekunder innan den försvinner
 width = 300

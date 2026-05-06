@@ -19,8 +19,9 @@ bindsym $mod+Ctrl+l exec i3lock --nofork -c 222030 --tiling
 # bindsym $mod+Ctrl+l exec i3lock --nofork -i ~/wallpapers/fingerprint.png -k
 
 # key § toggles language
-bindcode 49 exec "setxkbmap -query | grep -q 'layout:.*se' && setxkbmap us || setxkbmap se"
+bindcode 49 exec "setxkbmap -query | grep -q 'layout:.*se' && { setxkbmap us -option ctrl:nocaps; notify-send '🇺🇸 Keyboard' 'Switched to US'; } || { setxkbmap se -option ctrl:nocaps; notify-send '🇸🇪 Keyboard' 'Switched to SE'; }"
 bindsym $mod+t exec xprop | grep WM_CLASS | xsel -b && notify-send "Pasted windowsclass to clipboard"
+exec_always setxkbmap -option ctrl:nocaps
 
 bindsym $mod+y exec flameshot gui -c
 bindsym $mod+shift+y exec flameshot screen --path ~/screenshots
