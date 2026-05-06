@@ -59,3 +59,8 @@ vim.keymap.set("v", "<leader>yl", function()
   vim.fn.setreg("+", result)
   print("Yanked: " .. result)
 end, { desc = "Yank file location of selection" })
+
+-- Restarts language server
+vim.keymap.set("n", "<leader>lr", function()
+  vim.cmd("lsp restart")
+end, { desc = "LSP restart" })
