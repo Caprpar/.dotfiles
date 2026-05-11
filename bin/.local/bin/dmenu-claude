@@ -1,0 +1,15 @@
+#!/bin/bash
+
+QUERY=$(echo "" | dmenu -p "Ask Claude:")
+[ -z "$QUERY" ] && exit 0
+
+notify-send -u low "Claude" "Tänker..."
+
+RESPONSE=$(claude --print \
+  --model haiku \
+  --system-prompt "You are a Linux terminal assistant. Output ONLY the terminal command(s) needed. If the command requires dependencies not in the Arch Linux base system, list each one at the end in brackets like [yay -S packagename]. No explanations, no markdown, no code blocks." \
+  "$QUERY" 2>/dev/null)
+
+[ -z "$RESPONSE" ] && RESPONSE="Fick inget svar."
+
+notify-send -u critical "Claude: $QUERY" "$RESPONSE"
