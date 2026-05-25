@@ -15,7 +15,7 @@ bindsym $mod+p exec pastel --color-picker gpick pick | pastel format hex | xsel 
 bindsym $mod+n exec cd /home/caspar/notes && kitty nvim 
 bindsym $mod+m exec kitty ~/.local/bin/scratch
 
-bindsym $mod+Ctrl+l exec i3lock --nofork -c 222030 --tiling
+bindsym $mod+x exec i3lock --nofork -c 222030 --tiling
 # bindsym $mod+Ctrl+l exec i3lock --nofork -i ~/wallpapers/fingerprint.png -k
 
 # key § toggles language
