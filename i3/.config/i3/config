@@ -38,7 +38,7 @@ exec_always picom --config ~/.config/picom/picom.conf &
 exec_always /usr/bin/setxkbmap se &
 exec_always --no-startup-id /home/caspar/scripts/alternating_layouts.py
 exec_always --no-startup-id /home/caspar/scripts/battery.sh
-
+exec_always --no-startup-id xinput map-to-output "ELAN2513:00 04F3:4302" eDP-1
 
 # Set mod key
 set $mod Mod4
