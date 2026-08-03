@@ -12,7 +12,7 @@
 # OWN BINDINGS
 bindsym $mod+b exec firefox-developer-edition
 bindsym $mod+p exec pastel --color-picker gpick pick | pastel format hex | xsel -b
-bindsym $mod+n exec cd "/home/caspar/Documents/Obsidian Vault/" && kitty nvim 
+bindsym $mod+n exec cd "/home/caspar/zettle/" && kitty nvim 
 bindsym $mod+m exec kitty ~/.local/bin/scratch
 
 bindsym $mod+x exec i3lock --nofork -c 222030 --tiling
