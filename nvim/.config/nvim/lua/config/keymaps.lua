@@ -15,6 +15,72 @@ vim.keymap.set("i", "<Esc>", "<Nop>", { silent = true, desc = "Disable Esc in in
 vim.keymap.set("n", "H", "[h", { remap = true, desc = "Previous git hunk" })
 vim.keymap.set("n", "L", "]h", { remap = true, desc = "Next git hunk" })
 
+-- Navigate diagnostics with Left/Right
+vim.keymap.set("n", "<Left>", function()
+  vim.diagnostic.jump({ count = -1, float = true })
+end, { desc = "Previous diagnostic" })
+vim.keymap.set("n", "<Right>", function()
+  vim.diagnostic.jump({ count = 1, float = true })
+end, { desc = "Next diagnostic" })
+
+-- Cycle through unstaged files with Up/Down
+local function goto_unstaged_file(direction)
+  local root = vim.fn.systemlist("git rev-parse --show-toplevel")[1]
+  if vim.v.shell_error ~= 0 or not root then
+    vim.notify("Not in a git repository", vim.log.levels.WARN)
+    return
+  end
+
+  local files = vim.fn.systemlist("git -C " .. vim.fn.shellescape(root) .. " diff --name-only")
+  if #files == 0 then
+    vim.notify("No unstaged files", vim.log.levels.INFO)
+    return
+  end
+
+  local current = vim.fn.expand("%:p")
+  local idx = nil
+  for i, f in ipairs(files) do
+    if root .. "/" .. f == current then
+      idx = i
+      break
+    end
+  end
+
+  local next_idx
+  if idx == nil then
+    next_idx = 1
+  else
+    next_idx = ((idx - 1 + direction) % #files) + 1
+  end
+
+  vim.cmd("edit " .. vim.fn.fnameescape(root .. "/" .. files[next_idx]))
+end
+
+vim.keymap.set("n", "<Down>", function()
+  goto_unstaged_file(1)
+end, { desc = "Next unstaged file" })
+vim.keymap.set("n", "<Up>", function()
+  goto_unstaged_file(-1)
+end, { desc = "Previous unstaged file" })
+
+-- Copy absolute path of current file to clipboard
+vim.keymap.set("n", "cp", function()
+  local path
+  for _, picker in ipairs(Snacks.picker.get({ source = "explorer" })) do
+    if picker:current_win() then
+      local item = picker:current()
+      path = item and Snacks.picker.util.path(item)
+      break
+    end
+  end
+  path = path or vim.fn.expand("%:p")
+  vim.fn.setreg("+", path)
+  vim.notify("Copied: " .. path)
+end, { desc = "Copy absolute file path" })
+
+vim.keymap.set("n", "<M-l>", "<C-w>5>", { desc = "Widen window" })
+vim.keymap.set("n", "<M-h>", "<C-w>5<", { desc = "Narrow window" })
+
 -- vim.keymap.set("n", "<C-u>", "<C-u>zz", { remap = true, desc = "Half page up, center cursor" })
 -- vim.keymap.set("n", "<C-d>", "<C-d>zz", { remap = true, desc = "Half page down, center cursor" })
 -- Räkna ord i markering och kopiera till klippbord
@@ -64,3 +130,49 @@ end, { desc = "Yank file location of selection" })
 vim.keymap.set("n", "<leader>lr", function()
   vim.cmd("lsp restart")
 end, { desc = "LSP restart" })
+
+-- Toggle true/false under cursor, fallback to normal increment
+vim.keymap.set("n", "<C-a>", function()
+  local word = vim.fn.expand("<cword>")
+  if word == "true" then
+    vim.cmd("normal! ciwfalse")
+  elseif word == "false" then
+    vim.cmd("normal! ciwtrue")
+  else
+    vim.cmd("normal! \x01")
+  end
+end, { desc = "Toggle true/false (or increment)" })
+
+-- Toggle OMP side panel (normal mode)
+vim.keymap.set("n", "<leader>ac", function()
+  Snacks.terminal.toggle("omp", {
+    win = { position = "right", width = 0.4 },
+  })
+end, { desc = "Toggle Oh My Pi" })
+
+-- Toggle OMP from visual mode — selection is captured by the plugin's
+-- CursorMoved/marks tracking before focus leaves the buffer
+vim.keymap.set("v", "<leader>ac", function()
+  vim.cmd("normal! gv") -- reassert the visual selection so marks are set
+  vim.cmd("normal! \27") -- <Esc> to exit visual and lock in '< '>
+  Snacks.terminal.toggle("omp", {
+    win = { position = "right", width = 0.4 },
+  })
+end, { desc = "Send selection context to Oh My Pi" })
+
+-- Quick focus toggle between code and OMP panel (without closing it)
+vim.keymap.set("n", "<leader>af", function()
+  Snacks.terminal.toggle("omp", {
+    win = { position = "right", width = 0.4 },
+  })
+end, { desc = "Focus/unfocus Oh My Pi panel" })
+
+-- Jump cursor to a specific line before opening OMP, for quick "look at line N" asks
+vim.keymap.set("n", "<leader>as", function()
+  vim.ui.input({ prompt = "Jump to line: " }, function(line)
+    if line then
+      vim.cmd(":" .. line)
+    end
+    Snacks.terminal.toggle("omp", { win = { position = "right", width = 0.4 } })
+  end)
+end, { desc = "Jump to line + open Oh My Pi" })

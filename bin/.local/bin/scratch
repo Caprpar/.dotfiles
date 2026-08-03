@@ -10,6 +10,9 @@ cat >"$FILE" <<EOF
 # =====[ SCRATCHPAD ${TIME} ]=====
 <!-- markdownlint-disable -->
 
+\`\`\`json
+
+\`\`\`
 EOF
 
 nvim +3 "$FILE"
