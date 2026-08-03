@@ -11,7 +11,7 @@ set -euo pipefail
 #   export ZET_INBOX_DIR="$HOME/notes/inbox"
 #   export ZET_EXT="md"
 
-INBOX_DIR="${ZET_INBOX_DIR:-$HOME/notes/inbox}"
+INBOX_DIR="${ZET_INBOX_DIR:-$HOME/Documents/Obsidian Vault/inbox}"
 EXT="${ZET_EXT:-md}"
 
 die() {
