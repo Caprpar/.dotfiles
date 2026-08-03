@@ -12,6 +12,11 @@ source /usr/share/nvm/init-nvm.sh
 PS1=${PS1%?}
 PS1=${PS1%?}\n'$ '
 
+
+alias la='eza --icons --group-directories-first -a'
+alias lls='eza --icons --oneline --group-directories-first'
+alias ls='eza --icons --group-directories-first'
+
 alias docker-start='systemctl --user start docker-desktop'
 alias cbash='nvim ~/.bashrc_custom'
 alias cstartup='nvim ~/startup.sh'
