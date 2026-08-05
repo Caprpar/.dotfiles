@@ -26,6 +26,7 @@ exec_always setxkbmap -option ctrl:nocaps
 bindsym $mod+y exec flameshot gui -c
 bindsym $mod+shift+y exec flameshot screen --path ~/screenshots
 bindsym $mod+u exec flameshot gui --pin
+bindsym $mod+s exec slack
 
 # bindsym $mod+o exec obs --startrecording
 # INIT ON STARTUP
