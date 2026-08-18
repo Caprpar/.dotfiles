@@ -14,8 +14,9 @@ bindsym $mod+b exec firefox-developer-edition
 bindsym $mod+p exec pastel --color-picker gpick pick | pastel format hex | xsel -b
 bindsym $mod+n exec cd "/home/caspar/zettle/" && kitty nvim 
 bindsym $mod+m exec kitty ~/.local/bin/scratch
-
-bindsym $mod+x exec i3lock --nofork -c 222030 --tiling
+# bindsym $mod+x exec i3lock --nofork -c 222030 --tiling
+bindsym $mod+x exec i3lock --nofork -i ~/wallpapers/cbonsai.png -k
+bindsym $mod+Ctrl+l exec rm ~/Documents/prunk.png && flameshot full --path ~/Documents/prunk.png && i3lock --nofork -i ~/Documents/prunk.png -k
 # bindsym $mod+Ctrl+l exec i3lock --nofork -i ~/wallpapers/fingerprint.png -k
 
 # key § toggles language
@@ -23,10 +24,17 @@ bindcode 49 exec "setxkbmap -query | grep -q 'layout:.*se' && { setxkbmap us -op
 bindsym $mod+t exec xprop | grep WM_CLASS | xsel -b && notify-send "Pasted windowsclass to clipboard"
 exec_always setxkbmap -option ctrl:nocaps
 
+# muscle-memory retraining: notify if the physical Ctrl key is pressed (use CapsLock instead)
+# bound by keycode (not keysym) since ctrl:nocaps makes CapsLock emit Control_L/R too
+#
+# bindcode 37 exec --no-startup-id notify-send -u low "⌨️ Ctrl" "Use CapsLock instead!"
+# bindcode 105 exec --no-startup-id notify-send -u low "⌨️ Ctrl" "Use CapsLock instead!"
+
 bindsym $mod+y exec flameshot gui -c
 bindsym $mod+shift+y exec flameshot screen --path ~/screenshots
 bindsym $mod+u exec flameshot gui --pin
 bindsym $mod+s exec slack
+bindsym $mod+w exec  /home/caspar/scripts/watson-dmenu-start.sh
 
 # bindsym $mod+o exec obs --startrecording
 # INIT ON STARTUP
@@ -193,10 +201,10 @@ mode "resize" {
         # Pressing right will grow the window’s width.
         # Pressing up will shrink the window’s height.
         # Pressing down will grow the window’s height.
-        bindsym l resize shrink width 10 px or 10 ppt
+        bindsym l resize grow width 10 px or 10 ppt
         bindsym j resize grow height 10 px or 10 ppt
         bindsym k resize shrink height 10 px or 10 ppt
-        bindsym h resize grow width 10 px or 10 ppt
+        bindsym h resize shrink width 10 px or 10 ppt
 
         # same bindings, but for the arrow keys
         bindsym Right resize shrink width 5 px or 5 ppt
