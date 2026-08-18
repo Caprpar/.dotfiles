@@ -64,3 +64,15 @@ end, { desc = "Yank file location of selection" })
 vim.keymap.set("n", "<leader>lr", function()
   vim.cmd("lsp restart")
 end, { desc = "LSP restart" })
+
+-- Toggle true/false under cursor, fallback to normal increment
+vim.keymap.set("n", "<C-a>", function()
+  local word = vim.fn.expand("<cword>")
+  if word == "true" then
+    vim.cmd("normal! ciwfalse")
+  elseif word == "false" then
+    vim.cmd("normal! ciwtrue")
+  else
+    vim.cmd("normal! \x01")
+  end
+end, { desc = "Toggle true/false (or increment)" })
