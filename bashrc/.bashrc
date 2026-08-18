@@ -160,8 +160,8 @@ if [ -f "$HOME/.bashrc_custom" ]; then
 fi
 
 # Set local variables for surikat
-if [ -f "$HOME/.surrikat_env" ]; then
-  . "$HOME/.surrikat_env"
+if [ -f "$HOME/.surrikat.env" ]; then
+  . "$HOME/.surrikat.env"
 fi
 
 export NVM_DIR="$HOME/.nvm"
