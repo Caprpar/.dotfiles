@@ -1,9 +1,9 @@
 {
   "extras": [
     "lazyvim.plugins.extras.ai.claudecode",
+    "lazyvim.plugins.extras.dap.core",
     "lazyvim.plugins.extras.editor.harpoon2",
     "lazyvim.plugins.extras.editor.telescope",
-    "lazyvim.plugins.extras.formatting.prettier",
     "lazyvim.plugins.extras.lang.ember",
     "lazyvim.plugins.extras.lang.json",
     "lazyvim.plugins.extras.lang.markdown",
@@ -13,7 +13,9 @@
     "lazyvim.plugins.extras.lang.tailwind",
     "lazyvim.plugins.extras.lang.toml",
     "lazyvim.plugins.extras.lang.typescript",
+    "lazyvim.plugins.extras.lang.typescript.biome",
     "lazyvim.plugins.extras.linting.eslint",
+    "lazyvim.plugins.extras.test.core",
     "lazyvim.plugins.extras.util.gh",
     "lazyvim.plugins.extras.util.mini-hipatterns"
   ],
