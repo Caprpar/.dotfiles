@@ -8,9 +8,9 @@ case "$indicator" in
 # minor) echo "%{F#eed49f}    %{F-}" ;;    # yellow
 # major) echo "%{F#f5a97f}   󰔑 %{F-}" ;;    # orange
 # critical) echo "%{F#ed8796}    %{F-}" ;; # red
-none) echo "%{F#a6da95}  %{F-}" ;;     # green, operational
-minor) echo "%{F#eed49f}  %{F-}" ;;    # yellow
-major) echo "%{F#f5a97f}  %{F-}" ;;    # orange
-critical) echo "%{F#ed8796}  %{F-}" ;; # red
-*) echo "%{F#6e738d} GitHub?%{F-}" ;;   # unknown/curl fail
+none) echo "%{F#a6da95}%{F-}" ;;     # green, operational
+minor) echo "%{F#eed49f}%{F-}" ;;    # yellow
+major) echo "%{F#f5a97f}%{F-}" ;;    # orange
+critical) echo "%{F#ed8796}%{F-}" ;; # red
+*) echo "%{F#6e738d} GitHub?%{F-}" ;; # unknown/curl fail
 esac
