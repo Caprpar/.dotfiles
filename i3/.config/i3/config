@@ -20,9 +20,8 @@ bindsym $mod+Ctrl+l exec rm ~/Documents/prunk.png && flameshot full --path ~/Doc
 # bindsym $mod+Ctrl+l exec i3lock --nofork -i ~/wallpapers/fingerprint.png -k
 
 # key § toggles language
-bindcode 49 exec "setxkbmap -query | grep -q 'layout:.*se' && { setxkbmap us -option ctrl:nocaps; notify-send '🇺🇸 Keyboard' 'Switched to US'; } || { setxkbmap se -option ctrl:nocaps; notify-send '🇸🇪 Keyboard' 'Switched to SE'; }"
+# bindcode 49 exec "setxkbmap -query | grep -q 'layout:.*se' && { setxkbmap us -option ctrl:nocaps; notify-send '🇺🇸 Keyboard' 'Switched to US'; } || { setxkbmap se -option ctrl:nocaps; notify-send '🇸🇪 Keyboard' 'Switched to SE'; }"
 bindsym $mod+t exec xprop | grep WM_CLASS | xsel -b && notify-send "Pasted windowsclass to clipboard"
-exec_always setxkbmap -option ctrl:nocaps
 
 # muscle-memory retraining: notify if the physical Ctrl key is pressed (use CapsLock instead)
 # bound by keycode (not keysym) since ctrl:nocaps makes CapsLock emit Control_L/R too
@@ -44,7 +43,7 @@ exec_always --no-startup-id feh --bg-scale ~/wallpapers/cow-field.jpg
 exec_always --no-startup-id /home/caspar/.config/polybar/launch.sh
 exec_always xset r rate 200 35 &
 exec_always picom --config ~/.config/picom/picom.conf &
-exec_always /usr/bin/setxkbmap se &
+exec_always /usr/bin/setxkbmap se -option ctrl:nocaps &
 exec_always --no-startup-id /home/caspar/scripts/alternating_layouts.py
 exec_always --no-startup-id /home/caspar/scripts/battery.sh
 
