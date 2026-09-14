@@ -54,6 +54,29 @@ font pango:CaskaydiaCove Nerd Font 9
 # Border on focused window
 default_border pixel 0
 
+# Use Mouse+$mod to drag floating windows to their wanted position
+floating_modifier $mod
+
+# move tiling windows via drag & drop by left-clicking into the title bar,
+# or left-clicking anywhere into the window while holding the floating modifier.
+tiling_drag modifier titlebar
+
+
+###############################################################################
+# AUTOSTART / STARTUP APPLICATIONS
+###############################################################################
+
+# bindsym $mod+o exec obs --startrecording
+# exec_always --no-startup-id feh --bg-scale ~/wallpapers/winter-noon.jpg
+# exec_always --no-startup-id feh --bg-scale ~/wallpapers/pink-sunrise.jpg
+exec_always --no-startup-id feh --bg-scale ~/wallpapers/cow-field.jpg
+exec_always --no-startup-id /home/caspar/.config/polybar/launch.sh
+exec_always xset r rate 200 35 &
+exec_always picom --config ~/.config/picom/picom.conf &
+exec_always /usr/bin/setxkbmap se -option ctrl:nocaps &
+exec_always --no-startup-id /home/caspar/scripts/alternating_layouts.py
+exec_always --no-startup-id /home/caspar/scripts/battery.sh
+
 # Start XDG autostart .desktop files using dex. See also
 # https://wiki.archlinux.org/index.php/XDG_Autostart
 exec --no-startup-id dex --autostart --environment i3
@@ -66,10 +89,64 @@ exec --no-startup-id dex --autostart --environment i3
 exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork -c 222030 --tiling
 # exec_always --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork -i ~/wallpapers/fingerprint.png -k
 
-
 # NetworkManager is the most popular way to manage wireless networks on Linux,
 # and nm-applet is a desktop environment-independent system tray GUI for it.
 exec --no-startup-id nm-applet
+
+
+###############################################################################
+# OWN BINDINGS
+###############################################################################
+
+bindsym $mod+b exec firefox-developer-edition
+bindsym $mod+p exec pastel --color-picker gpick pick | pastel format hex | xsel -b
+bindsym $mod+n exec cd "/home/caspar/zettle/" && kitty nvim
+bindsym $mod+m exec kitty ~/.local/bin/scratch
+# bindsym $mod+x exec i3lock --nofork -c 222030 --tiling
+bindsym $mod+x exec i3lock --nofork -i ~/wallpapers/cbonsai.png -k
+bindsym $mod+Ctrl+l exec rm ~/Documents/prunk.png && flameshot full --path ~/Documents/prunk.png && i3lock --nofork -i ~/Documents/prunk.png -k
+bindsym $mod+Ctrl+j exec --no-startup-id python3 /home/caspar/.dotfiles/i3/.config/i3/new_humbug_json.py
+# bindsym $mod+Ctrl+l exec i3lock --nofork -i ~/wallpapers/fingerprint.png -k
+
+bindsym $mod+y exec flameshot gui -c
+bindsym $mod+shift+y exec flameshot screen --path ~/screenshots
+bindsym $mod+u exec flameshot gui --pin
+bindsym $mod+s exec slack
+bindsym $mod+w exec  /home/caspar/scripts/watson-dmenu-start.sh
+
+# start a terminal
+bindsym $mod+Return exec kitty
+
+# start dmenu (a program launcher)
+bindsym $mod+d exec --no-startup-id dmenu_run
+bindsym $mod+c exec --no-startup-id /home/caspar/.local/bin/dmenu-calc
+bindsym $mod+shift+d exec --no-startup-id /home/caspar/.local/bin/dmenu-claude
+
+# A more modern dmenu replacement is rofi:
+# bindcode $mod+40 exec "rofi -modi drun,run -show drun"
+# There also is i3-dmenu-desktop which only displays applications shipping a
+# .desktop file. It is a wrapper around dmenu, so you need that installed.
+# bindcode $mod+40 exec --no-startup-id i3-dmenu-desktop
+
+
+###############################################################################
+# KEYBOARD LAYOUT / LANGUAGE
+###############################################################################
+
+# key § toggles language
+# bindcode 49 exec "setxkbmap -query | grep -q 'layout:.*se' && { setxkbmap us -option ctrl:nocaps; notify-send '🇺🇸 Keyboard' 'Switched to US'; } || { setxkbmap se -option ctrl:nocaps; notify-send '🇸🇪 Keyboard' 'Switched to SE'; }"
+bindsym $mod+t exec xprop | grep WM_CLASS | xsel -b && notify-send "Pasted windowsclass to clipboard"
+
+# muscle-memory retraining: notify if the physical Ctrl key is pressed (use CapsLock instead)
+# bound by keycode (not keysym) since ctrl:nocaps makes CapsLock emit Control_L/R too
+#
+# bindcode 37 exec --no-startup-id notify-send -u low "⌨️ Ctrl" "Use CapsLock instead!"
+# bindcode 105 exec --no-startup-id notify-send -u low "⌨️ Ctrl" "Use CapsLock instead!"
+
+
+###############################################################################
+# MEDIA / VOLUME / BRIGHTNESS KEYS
+###############################################################################
 
 # Use pactl to adjust volume in PulseAudio.
 set $refresh_i3status killall -SIGUSR1 i3status
@@ -85,29 +162,13 @@ bindsym XF86AudioPrev exec --no-startup-id playerctl previous
 bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl set 5%-
 bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl set +5%
 
-# Use Mouse+$mod to drag floating windows to their wanted position
-floating_modifier $mod
 
-# move tiling windows via drag & drop by left-clicking into the title bar,
-# or left-clicking anywhere into the window while holding the floating modifier.
-tiling_drag modifier titlebar
-
-# start a terminal
-bindsym $mod+Return exec kitty
+###############################################################################
+# WINDOW MANAGEMENT
+###############################################################################
 
 # kill focused window
 bindsym $mod+Shift+q kill
-
-# start dmenu (a program launcher)
-bindsym $mod+d exec --no-startup-id dmenu_run
-bindsym $mod+c exec --no-startup-id /home/caspar/.local/bin/dmenu-calc
-bindsym $mod+shift+d exec --no-startup-id /home/caspar/.local/bin/dmenu-claude
-
-# A more modern dmenu replacement is rofi:
-# bindcode $mod+40 exec "rofi -modi drun,run -show drun"
-# There also is i3-dmenu-desktop which only displays applications shipping a
-# .desktop file. It is a wrapper around dmenu, so you need that installed.
-# bindcode $mod+40 exec --no-startup-id i3-dmenu-desktop
 
 # change focus
 bindsym $mod+h focus left
@@ -140,6 +201,11 @@ bindsym $mod+a focus parent
 
 # focus the child container
 #bindsym $mod+d focus child
+
+
+###############################################################################
+# WORKSPACES
+###############################################################################
 
 # Define names for default workspaces for which we configure key bindings later on.
 # We use variables to avoid repeating the names in multiple places.
@@ -178,12 +244,22 @@ bindsym $mod+Shift+8 move container to workspace number $ws8
 bindsym $mod+Shift+9 move container to workspace number $ws9
 bindsym $mod+Shift+0 move container to workspace number $ws10
 
+
+###############################################################################
+# I3 SESSION CONTROL
+###############################################################################
+
 # reload the configuration file
 bindsym $mod+Shift+c reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+Shift+r restart
 # exit i3 (logs you out of your X session)
 bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
+
+
+###############################################################################
+# RESIZE MODE
+###############################################################################
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
@@ -211,6 +287,11 @@ mode "resize" {
 }
 
 bindsym $mod+r mode "resize"
+
+
+###############################################################################
+# BAR
+###############################################################################
 
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
