@@ -12,6 +12,7 @@ source /usr/share/nvm/init-nvm.sh
 PS1=${PS1%?}
 PS1=${PS1%?}\n'$ '
 
+bind -x '"\C-f": tmux-sessionizer'
 
 alias la='eza --icons --group-directories-first -a'
 alias lls='eza --icons --oneline --group-directories-first'
