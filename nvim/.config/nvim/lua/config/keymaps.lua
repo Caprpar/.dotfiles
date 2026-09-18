@@ -96,8 +96,6 @@ vim.keymap.set("v", "<leader>wc", function()
   print("Words: " .. count_str)
 end, { desc = "Count words in selection" })
 
-vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Rename references" })
-
 -- Open images with feh
 vim.keymap.set("n", "gx", function()
   local path = vim.fn.expand("<cfile>")
@@ -143,36 +141,16 @@ vim.keymap.set("n", "<C-a>", function()
   end
 end, { desc = "Toggle true/false (or increment)" })
 
--- Toggle OMP side panel (normal mode)
-vim.keymap.set("n", "<leader>ac", function()
-  Snacks.terminal.toggle("omp", {
-    win = { position = "right", width = 0.4 },
-  })
-end, { desc = "Toggle Oh My Pi" })
-
--- Toggle OMP from visual mode — selection is captured by the plugin's
--- CursorMoved/marks tracking before focus leaves the buffer
-vim.keymap.set("v", "<leader>ac", function()
-  vim.cmd("normal! gv") -- reassert the visual selection so marks are set
-  vim.cmd("normal! \27") -- <Esc> to exit visual and lock in '< '>
-  Snacks.terminal.toggle("omp", {
-    win = { position = "right", width = 0.4 },
-  })
-end, { desc = "Send selection context to Oh My Pi" })
-
--- Quick focus toggle between code and OMP panel (without closing it)
-vim.keymap.set("n", "<leader>af", function()
-  Snacks.terminal.toggle("omp", {
-    win = { position = "right", width = 0.4 },
-  })
-end, { desc = "Focus/unfocus Oh My Pi panel" })
-
--- Jump cursor to a specific line before opening OMP, for quick "look at line N" asks
-vim.keymap.set("n", "<leader>as", function()
-  vim.ui.input({ prompt = "Jump to line: " }, function(line)
-    if line then
-      vim.cmd(":" .. line)
-    end
-    Snacks.terminal.toggle("omp", { win = { position = "right", width = 0.4 } })
-  end)
-end, { desc = "Jump to line + open Oh My Pi" })
+-- OpenCode
+vim.keymap.set({ "n", "x" }, "<leader>aa", function()
+  require("opencode").ask("@this: ")
+end, { desc = "Ask OpenCode…" })
+vim.keymap.set({ "n", "x" }, "<leader>as", function()
+  require("opencode").select()
+end, { desc = "Select OpenCode…" })
+vim.keymap.set({ "n", "x" }, "<leader>go", function()
+  return require("opencode").operator("@this ")
+end, { desc = "Append range to OpenCode", expr = true })
+vim.keymap.set("n", "<leader>goo", function()
+  return require("opencode").operator("@this ") .. "_"
+end, { desc = "Append line to OpenCode", expr = true })
