@@ -9,44 +9,6 @@
 #
 # Please see https://i3wm.org/docs/userguide.html for a complete reference!
 
-# OWN BINDINGS
-bindsym $mod+b exec firefox-developer-edition
-bindsym $mod+p exec pastel --color-picker gpick pick | pastel format hex | xsel -b
-bindsym $mod+n exec cd "/home/caspar/zettle/" && kitty nvim 
-bindsym $mod+m exec kitty ~/.local/bin/scratch
-# bindsym $mod+x exec i3lock --nofork -c 222030 --tiling
-bindsym $mod+x exec i3lock --nofork -i ~/wallpapers/cbonsai.png -k
-bindsym $mod+Ctrl+l exec rm ~/Documents/prunk.png && flameshot full --path ~/Documents/prunk.png && i3lock --nofork -i ~/Documents/prunk.png -k
-# bindsym $mod+Ctrl+l exec i3lock --nofork -i ~/wallpapers/fingerprint.png -k
-
-# key § toggles language
-# bindcode 49 exec "setxkbmap -query | grep -q 'layout:.*se' && { setxkbmap us -option ctrl:nocaps; notify-send '🇺🇸 Keyboard' 'Switched to US'; } || { setxkbmap se -option ctrl:nocaps; notify-send '🇸🇪 Keyboard' 'Switched to SE'; }"
-bindsym $mod+t exec xprop | grep WM_CLASS | xsel -b && notify-send "Pasted windowsclass to clipboard"
-
-# muscle-memory retraining: notify if the physical Ctrl key is pressed (use CapsLock instead)
-# bound by keycode (not keysym) since ctrl:nocaps makes CapsLock emit Control_L/R too
-#
-# bindcode 37 exec --no-startup-id notify-send -u low "⌨️ Ctrl" "Use CapsLock instead!"
-# bindcode 105 exec --no-startup-id notify-send -u low "⌨️ Ctrl" "Use CapsLock instead!"
-
-bindsym $mod+y exec flameshot gui -c
-bindsym $mod+shift+y exec flameshot screen --path ~/screenshots
-bindsym $mod+u exec flameshot gui --pin
-bindsym $mod+s exec slack
-bindsym $mod+w exec  /home/caspar/scripts/watson-dmenu-start.sh
-
-# bindsym $mod+o exec obs --startrecording
-# INIT ON STARTUP
-# exec_always --no-startup-id feh --bg-scale ~/wallpapers/winter-noon.jpg
-# exec_always --no-startup-id feh --bg-scale ~/wallpapers/pink-sunrise.jpg
-exec_always --no-startup-id feh --bg-scale ~/wallpapers/cow-field.jpg
-exec_always --no-startup-id /home/caspar/.config/polybar/launch.sh
-exec_always xset r rate 200 35 &
-exec_always picom --config ~/.config/picom/picom.conf &
-exec_always /usr/bin/setxkbmap se -option ctrl:nocaps &
-exec_always --no-startup-id /home/caspar/scripts/alternating_layouts.py
-exec_always --no-startup-id /home/caspar/scripts/battery.sh
-
 # Set mod key
 set $mod Mod4
 
@@ -76,6 +38,7 @@ tiling_drag modifier titlebar
 # bindsym $mod+o exec obs --startrecording
 # exec_always --no-startup-id feh --bg-scale ~/wallpapers/winter-noon.jpg
 # exec_always --no-startup-id feh --bg-scale ~/wallpapers/pink-sunrise.jpg
+exec --no-startup-id /home/caspar/.config/i3/setup-monitors.sh
 exec_always --no-startup-id feh --bg-scale ~/wallpapers/cow-field.jpg
 exec_always --no-startup-id /home/caspar/.config/polybar/launch.sh
 exec_always xset r rate 200 35 &
