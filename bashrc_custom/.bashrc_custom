@@ -51,3 +51,4 @@ alias cd='z'
 
 # import zoxide
 eval "$(zoxide init bash)"
+clear
