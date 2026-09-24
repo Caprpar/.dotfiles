@@ -4,7 +4,11 @@ return {
   config = function()
     ---@type opencode.Opts
     vim.g.opencode_opts = {
-      -- Your configuration, if any; goto definition on the type for details
+      select = {
+        prompts = {
+          names = "Suggest clearer, more descriptive names for the variables and functions in @this. Briefly explain each suggestion without editing the code.",
+        },
+      },
     }
 
     -- Recommended/example keymaps
