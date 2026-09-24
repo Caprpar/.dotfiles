@@ -2,6 +2,11 @@ import { readFile, writeFile } from "node:fs/promises";
 
 type DurationUnit = "h" | "m" | "s";
 
+type TimeDatabase = {
+  workedSecondsByMonth: Map<string, number>;
+  latestFlexTimeSeconds: number | null;
+};
+
 const FIRST_MONTH = new Date(2026, 7, 1);
 const PERSON_ID = "3428";
 const TIME_DATABASE_URL = new URL("./time-calc-data.json", import.meta.url);
@@ -104,30 +109,69 @@ async function fetchWorkedSeconds(date: Date, cookie: string): Promise<[string, 
   return [monthKey, parseWorkedSeconds(await response.text(), monthKey)];
 }
 
-async function readTimeDatabase(): Promise<Map<string, number>> {
+function validateWorkedSecondsRecord(data: unknown): Map<string, number> {
+  if (typeof data !== "object" || data === null || Array.isArray(data)) {
+    throw new Error("Database months must be a JSON object");
+  }
+
+  const entries = Object.entries(data);
+  if (entries.some(([monthKey, seconds]) => !/^\d{4}-(0[1-9]|1[0-2])$/.test(monthKey) || !Number.isSafeInteger(seconds) || Number(seconds) < 0)) {
+    throw new Error("Database contains invalid month data");
+  }
+
+  return new Map(entries as Array<[string, number]>);
+}
+
+async function readTimeDatabase(): Promise<TimeDatabase> {
   try {
     const data = JSON.parse(await readFile(TIME_DATABASE_URL, "utf8")) as unknown;
-    if (typeof data !== "object" || data === null || Array.isArray(data)) throw new Error("Database must be a JSON object");
-
-    const entries = Object.entries(data);
-    if (entries.some(([monthKey, seconds]) => !/^\d{4}-(0[1-9]|1[0-2])$/.test(monthKey) || !Number.isSafeInteger(seconds) || Number(seconds) < 0)) {
-      throw new Error("Database contains invalid month data");
+    if (typeof data !== "object" || data === null || Array.isArray(data)) {
+      throw new Error("Database must be a JSON object");
     }
 
-    return new Map(entries as Array<[string, number]>);
+    if ("workedSecondsByMonth" in data) {
+      const workedSecondsByMonth = validateWorkedSecondsRecord((data as { workedSecondsByMonth: unknown }).workedSecondsByMonth);
+      const latestFlexTimeSecondsRaw = (data as { latestFlexTimeSeconds?: unknown }).latestFlexTimeSeconds;
+      if (latestFlexTimeSecondsRaw !== undefined && latestFlexTimeSecondsRaw !== null && !Number.isSafeInteger(latestFlexTimeSecondsRaw)) {
+        throw new Error("latestFlexTimeSeconds must be an integer");
+      }
+
+      return {
+        workedSecondsByMonth,
+        latestFlexTimeSeconds: (latestFlexTimeSecondsRaw as number | null | undefined) ?? null,
+      };
+    }
+
+    return {
+      workedSecondsByMonth: validateWorkedSecondsRecord(data),
+      latestFlexTimeSeconds: null,
+    };
   } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === "ENOENT") return new Map();
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") {
+      return { workedSecondsByMonth: new Map(), latestFlexTimeSeconds: null };
+    }
+
     throw new Error(`Failed to read time database: ${(error as Error).message}`);
   }
 }
 
-async function updateTimeDatabase(): Promise<Map<string, number>> {
+async function writeTimeDatabase(database: TimeDatabase): Promise<void> {
+  const payload = {
+    workedSecondsByMonth: Object.fromEntries(database.workedSecondsByMonth),
+    latestFlexTimeSeconds: database.latestFlexTimeSeconds,
+  };
+
+  await writeFile(TIME_DATABASE_URL, `${JSON.stringify(payload, null, 2)}\n`, { mode: 0o600 });
+}
+
+async function updateTimeDatabase(): Promise<TimeDatabase> {
   const cookie = process.env.TID_COOKIE;
   if (!cookie) throw new Error("TID_COOKIE is not set");
 
   const today = new Date();
   const currentMonthKey = toMonthKey(today);
-  const workedSecondsByMonth = await readTimeDatabase();
+  const timeDatabase = await readTimeDatabase();
+  const { workedSecondsByMonth } = timeDatabase;
   const monthsToFetch: Date[] = [];
 
   for (const date = new Date(FIRST_MONTH); date <= today; date.setMonth(date.getMonth() + 1)) {
@@ -142,9 +186,9 @@ async function updateTimeDatabase(): Promise<Map<string, number>> {
     workedSecondsByMonth.set(monthKey, workedSeconds);
   }
 
-  await writeFile(TIME_DATABASE_URL, `${JSON.stringify(Object.fromEntries(workedSecondsByMonth), null, 2)}\n`, { mode: 0o600 });
+  await writeTimeDatabase(timeDatabase);
 
-  return workedSecondsByMonth;
+  return timeDatabase;
 }
 
 function calculateFlexTimeSeconds(workedSecondsByMonth: Map<string, number>, countToday: boolean): number {
@@ -166,8 +210,25 @@ function calculateFlexTimeSeconds(workedSecondsByMonth: Map<string, number>, cou
   return flexTimeSeconds;
 }
 
-const workedSecondsByMonth = await updateTimeDatabase();
-const flexTimeSeconds = calculateFlexTimeSeconds(workedSecondsByMonth, false);
-const sign = flexTimeSeconds < 0 ? "-" : "";
-const formattedFlexTime = `${sign}${formatDuration(Math.abs(flexTimeSeconds))}`;
-console.log({ flex: formattedFlexTime })
+function formatFlexTime(totalSeconds: number): string {
+  const sign = totalSeconds < 0 ? "-" : "";
+  return `${sign}${formatDuration(Math.abs(totalSeconds))}`;
+}
+
+const printCurrentOnly = process.argv.includes("--current");
+
+if (printCurrentOnly) {
+  const { latestFlexTimeSeconds } = await readTimeDatabase();
+  if (latestFlexTimeSeconds === null) {
+    throw new Error("No cached flex value found. Run without --current first.");
+  }
+
+  console.log({ flex: formatFlexTime(latestFlexTimeSeconds) });
+  process.exit(0);
+}
+
+const timeDatabase = await updateTimeDatabase();
+const flexTimeSeconds = calculateFlexTimeSeconds(timeDatabase.workedSecondsByMonth, false);
+timeDatabase.latestFlexTimeSeconds = flexTimeSeconds;
+await writeTimeDatabase(timeDatabase);
+console.log({ flex: formatFlexTime(flexTimeSeconds) });
