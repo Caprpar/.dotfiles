@@ -1,0 +1,143 @@
+#!/usr/bin/env bash
+# Harpoon-style session marks for tmux: mark sessions into numbered slots,
+# jump straight to a slot, or cycle between marked sessions.
+
+MARKS_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/tmux"
+MARKS_FILE="$MARKS_DIR/harpoon"
+MAX_MARKS=9
+
+mkdir -p "$MARKS_DIR"
+touch "$MARKS_FILE"
+
+current_session() {
+  tmux display-message -p '#S'
+}
+
+notify() {
+  tmux display-message "harpoon: $*"
+}
+
+switch_to() {
+  local target="$1"
+  if [[ -z "$TMUX" ]]; then
+    tmux attach-session -t "$target"
+  else
+    tmux switch-client -t "$target"
+  fi
+}
+
+session_exists() {
+  tmux has-session -t "=$1" 2>/dev/null
+}
+
+prune_dead() {
+  local tmp
+  tmp=$(mktemp)
+  while IFS= read -r line; do
+    [[ -z "$line" ]] && continue
+    session_exists "$line" && echo "$line" >>"$tmp"
+  done <"$MARKS_FILE"
+  mv "$tmp" "$MARKS_FILE"
+}
+
+cmd_add() {
+  prune_dead
+  local cur
+  cur=$(current_session)
+
+  local i=1
+  while IFS= read -r line; do
+    if [[ "$line" == "$cur" ]]; then
+      notify "'$cur' is already slot $i"
+      return
+    fi
+    ((i++))
+  done <"$MARKS_FILE"
+
+  local count
+  count=$(wc -l <"$MARKS_FILE")
+  if ((count >= MAX_MARKS)); then
+    notify "list full ($MAX_MARKS max) — open the menu (prefix+m) to make room"
+    return
+  fi
+
+  echo "$cur" >>"$MARKS_FILE"
+  notify "marked '$cur' as slot $((count + 1))"
+}
+
+cmd_remove() {
+  prune_dead
+  local cur
+  cur=$(current_session)
+  if grep -qxF "$cur" "$MARKS_FILE"; then
+    grep -vxF "$cur" "$MARKS_FILE" >"$MARKS_FILE.tmp"
+    mv "$MARKS_FILE.tmp" "$MARKS_FILE"
+    notify "unmarked '$cur'"
+  else
+    notify "'$cur' was not marked"
+  fi
+}
+
+cmd_goto() {
+  prune_dead
+  local n="$1"
+  local target
+  target=$(sed -n "${n}p" "$MARKS_FILE")
+  if [[ -z "$target" ]]; then
+    notify "slot $n is empty"
+    return
+  fi
+  switch_to "$target"
+}
+
+cmd_cycle() {
+  prune_dead
+  local dir="$1" # next|prev
+  local cur
+  cur=$(current_session)
+
+  mapfile -t marks <"$MARKS_FILE"
+  local count=${#marks[@]}
+  if ((count == 0)); then
+    notify "no marked sessions yet — prefix+a to mark this one"
+    return
+  fi
+
+  local idx=-1
+  for i in "${!marks[@]}"; do
+    if [[ "${marks[$i]}" == "$cur" ]]; then
+      idx=$i
+      break
+    fi
+  done
+
+  local next_idx
+  if ((idx == -1)); then
+    next_idx=0
+  elif [[ "$dir" == "next" ]]; then
+    next_idx=$(((idx + 1) % count))
+  else
+    next_idx=$(((idx - 1 + count) % count))
+  fi
+
+  switch_to "${marks[$next_idx]}"
+}
+
+cmd_menu() {
+  local editor="${EDITOR:-nvim}"
+  tmux display-popup -E -w 50 -h 15 -T " harpoon marks (edit/reorder, save & quit) " \
+    "$editor '$MARKS_FILE'"
+}
+
+case "$1" in
+  add) cmd_add ;;
+  remove) cmd_remove ;;
+  goto) cmd_goto "$2" ;;
+  next) cmd_cycle next ;;
+  prev) cmd_cycle prev ;;
+  menu) cmd_menu ;;
+  *)
+    echo "Usage: tmux-harpoon {add|remove|goto <n>|next|prev|menu}"
+    exit 1
+    ;;
+esac
