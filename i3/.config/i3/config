@@ -73,7 +73,7 @@ bindsym $mod+p exec pastel --color-picker gpick pick | pastel format hex | xsel 
 bindsym $mod+n exec cd "/home/caspar/zettle/" && kitty nvim
 bindsym $mod+m exec kitty ~/.local/bin/scratch
 # bindsym $mod+x exec i3lock --nofork -c 222030 --tiling
-bindsym $mod+x exec i3lock --nofork -i ~/wallpapers/cbonsai.png -k
+bindsym $mod+x exec i3lock --nofork -i ~/wallpapers/human-will.jpg -k
 bindsym $mod+Ctrl+l exec rm ~/Documents/prunk.png && flameshot full --path ~/Documents/prunk.png && i3lock --nofork -i ~/Documents/prunk.png -k
 bindsym $mod+Ctrl+j exec --no-startup-id python3 /home/caspar/.dotfiles/i3/.config/i3/new_humbug_json.py
 # bindsym $mod+Ctrl+l exec i3lock --nofork -i ~/wallpapers/fingerprint.png -k
