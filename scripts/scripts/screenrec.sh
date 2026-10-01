@@ -23,7 +23,7 @@ start() {
   setsid ffmpeg -nostdin -loglevel warning \
     -thread_queue_size 1024 -video_size "$size" -framerate 25 -f x11grab -i :0.0 \
     -thread_queue_size 4096 -f pulse -ac 1 -i default \
-    -af "volume=4,aresample=async=1" \
+    -af "volume=2,aresample=async=1" \
     -c:v libx264 -preset ultrafast -crf 23 -c:a libopus -b:a 128k \
     "$file" >/tmp/screenrec.log 2>&1 &
   echo $! >"$PIDFILE"
