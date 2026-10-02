@@ -20,7 +20,7 @@ yay -S --needed \
   dunst libnotify \
   ttf-cascadia-code-nerd \
   acpi jq bluez bluez-utils pavucontrol \
-  bc
+  bc zoxide nodejs nvm fzf xorg-xrandr docker docker-compose
 ```
 
 Glöm inte att aktivera/starta NetworkManager och Bluetooth-daemonen om de
@@ -33,8 +33,9 @@ sudo systemctl enable --now NetworkManager bluetooth
 ## Vad varje paket används till
 
 ### Kärna (fönsterhanterare / bar / compositor)
+
 | Paket | Används av |
-|---|---|
+| --- | --- |
 | `i3-wm` | Fönsterhanteraren själv (inkl. `i3lock`-nagbar-dialogen på `$mod+Shift+e`) |
 | `polybar` | Statusbaren, startas via `polybar/.config/polybar/launch.sh` |
 | `picom` | `exec_always picom --config ~/.config/picom/picom.conf` i i3-config |
@@ -45,8 +46,9 @@ sudo systemctl enable --now NetworkManager bluetooth
 | `i3lock` | `$mod+x`, `$mod+Ctrl+l` |
 
 ### X-verktyg
+
 | Paket | Används av |
-|---|---|
+| --- | --- |
 | `xorg-xset` | `xset r rate 200 35` (tangentbordsrepetition) |
 | `xorg-setxkbmap` | Layout-växling (`setxkbmap se -option ctrl:nocaps`) |
 | `xorg-xprop` | `$mod+t` (kopierar WM_CLASS till urklipp) |
@@ -55,13 +57,15 @@ sudo systemctl enable --now NetworkManager bluetooth
 | `xclip` | `dmenu-calc` |
 
 ### Nätverk / session
+
 | Paket | Används av |
 |---|---|
 | `networkmanager` + `network-manager-applet` | `exec --no-startup-id nm-applet` |
 
 ### Program bundna till binds
+
 | Paket | Används av |
-|---|---|
+| --- | --- |
 | `kitty` | `$mod+Return`, `$mod+n`, `$mod+m` |
 | `neovim` | Öppnas via kitty i `$mod+n` och `bin/.local/bin/scratch` |
 | `flameshot` | `$mod+y`, `$mod+shift+y`, `$mod+u`, `$mod+Ctrl+l` |
@@ -69,43 +73,50 @@ sudo systemctl enable --now NetworkManager bluetooth
 | `firefox-developer-edition` | `$mod+b` |
 
 ### Media / volym / ljusstyrka
+
 | Paket | Används av |
-|---|---|
+| --- | --- |
 | `playerctl` | `XF86AudioPlay/Next/Prev` |
 | `brightnessctl` | `XF86MonBrightness{Up,Down}` |
 | `libpulse` (ger `pactl`) | Volym-binds samt polybars `pulseaudio`-modul |
 
 ### Färgverktyg
+
 | Paket | Används av |
-|---|---|
+| --- | --- |
 | `pastel` | `$mod+p` (formatterar färg som hex) |
 | `gpick` | `$mod+p` (själva färgväljar-GUI:t) |
 
 ### Python
+
 | Paket | Används av |
 |---|---|
 | `python-i3ipc` | `i3/.config/i3/new_humbug_json.py` och `scripts/scripts/alternating_layouts.py` (autostartat) |
 
 ### Notifikationer
+
 | Paket | Används av |
-|---|---|
+| --- | --- |
 | `dunst` | Notifikationsdaemon (redan konfigurerad i `dunst/.config/dunst/dunstrc`) — behövs för alla `notify-send`-anrop |
 | `libnotify` | Ger `notify-send`-kommandot |
 
 ### Typsnitt
+
 | Paket | Används av |
 |---|---|
 | `ttf-cascadia-code-nerd` | `font pango:CaskaydiaCove Nerd Font` i i3, `font-0` i polybar, samt alla Nerd Font-ikoner i modulerna |
 
 ### Polybar-moduler (scripts under `scripts/scripts/`)
+
 | Paket | Används av |
-|---|---|
+| --- | --- |
 | `acpi` | `battery.sh` (batterivarning) |
 | `jq` | `bluetooth-status.sh` (parsar D-Bus/`busctl`-JSON) |
 | `bluez` + `bluez-utils` | Bluetooth-status samt `bluetoothctl` i `click-left` på bluetooth-modulen |
 | `pavucontrol` | `click-right` på pulseaudio-modulen |
 
 ### Övrigt
+
 | Paket | Används av |
 |---|---|
 | `bc` | `dmenu-calc` (beräkningar) |
