@@ -38,6 +38,9 @@ tiling_drag modifier titlebar
 # bindsym $mod+o exec obs --startrecording
 # exec_always --no-startup-id feh --bg-scale ~/wallpapers/winter-noon.jpg
 # exec_always --no-startup-id feh --bg-scale ~/wallpapers/pink-sunrise.jpg
+# Start tmux (and Continuum's restore) only after X has provided its display
+# and authorization file. The user systemd manager may predate this login.
+exec --no-startup-id sh -c 'systemctl --user import-environment DISPLAY XAUTHORITY && systemctl --user start tmux.service'
 exec --no-startup-id /home/caspar/.config/i3/setup-monitors.sh
 exec_always --no-startup-id feh --bg-scale ~/wallpapers/cow-field.jpg
 exec_always --no-startup-id /home/caspar/.config/polybar/launch.sh
