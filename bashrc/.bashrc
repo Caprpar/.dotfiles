@@ -160,8 +160,8 @@ if [ -f "$HOME/.bashrc_custom" ]; then
 fi
 
 # Set local variables for surikat
-if [ -f "$HOME/.surrikat.env" ]; then
-  . "$HOME/.surrikat.env"
+if [ -f "$HOME/.surikat.env" ]; then
+  . "$HOME/.surikat.env"
 fi
 
 clear
