@@ -8,7 +8,7 @@ case "$indicator" in
 # minor) echo "%{F#eed49f}    %{F-}" ;;    # yellow
 # major) echo "%{F#f5a97f}   󰔑 %{F-}" ;;    # orange
 # critical) echo "%{F#ed8796}    %{F-}" ;; # red
-none) echo "%{F#a6da95}%{F-}" ;;     # green, operational
+none) ;;                            # operational: hide module
 minor) echo "%{F#eed49f}%{F-}" ;;    # yellow
 major) echo "%{F#f5a97f}%{F-}" ;;    # orange
 critical) echo "%{F#ed8796}%{F-}" ;; # red
