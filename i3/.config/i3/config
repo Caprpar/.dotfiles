@@ -83,10 +83,12 @@ bindsym $mod+Ctrl+l exec rm ~/Documents/prunk.png && flameshot full --path ~/Doc
 bindsym $mod+Ctrl+j exec --no-startup-id python3 /home/caspar/.dotfiles/i3/.config/i3/new_humbug_json.py
 # bindsym $mod+Ctrl+l exec i3lock --nofork -i ~/wallpapers/fingerprint.png -k
 
-bindsym $mod+plus exec --no-startup-id /home/caspar/scripts/screenrec.sh
+# Ctrl+Shift and the physical + key on the Swedish keyboard (Shift produces ?).
+# bindcode Ctrl+Shift+20 exec --no-startup-id /home/caspar/scripts/screenrec.sh
 bindsym $mod+y exec flameshot gui -c
-bindsym $mod+shift+y exec flameshot screen --path ~/screenshots
+bindsym $mod+shift+y exec flameshot gui --path ~/screenshots
 bindsym $mod+u exec flameshot gui --pin
+bindsym $mod+Shift+u exec --no-startup-id /home/caspar/scripts/flameshot-ocr.sh
 bindsym $mod+s exec slack
 bindsym $mod+w exec  /home/caspar/scripts/watson-dmenu-start.sh
 
