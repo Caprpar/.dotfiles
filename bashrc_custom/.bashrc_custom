@@ -36,6 +36,9 @@ alias tss='tmux new -s "server"'
 alias tsd='tmux new -s "$(basename "$PWD")" -d'
 alias t='tmux at'
 
+# Start the Surikaterna development servers in five tmux panes.
+alias server='"$HOME/scripts/server.sh"'
+
 alias zet='~/.local/bin/zet'
 alias ztodo='~/.local/bin/ztodo'
 alias zlit='~/.local/bin/zlit'
