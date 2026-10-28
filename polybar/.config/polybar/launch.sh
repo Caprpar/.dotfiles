@@ -36,8 +36,8 @@ fi
 # Use the selected machine layout on every connected monitor.
 while IFS=: read -r monitor _; do
   [[ -n "$monitor" ]] || continue
-  case "$monitor" in
-  HDMI-A-0 | DisplayPort-0) bar="$MACHINE_PROFILE-scaled" ;;
+  case "$MACHINE_PROFILE:$monitor" in
+  home:eDP-1 | *:HDMI-A-0 | *:DisplayPort-0) bar="$MACHINE_PROFILE-scaled" ;;
   *) bar="$MACHINE_PROFILE" ;;
   esac
   MONITOR="$monitor" polybar --config="$config_dir/config.ini" "$bar" >>"/tmp/polybar-$monitor.log" 2>&1 9>&- &
