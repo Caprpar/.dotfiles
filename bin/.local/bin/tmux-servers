@@ -1,0 +1,211 @@
+#!/usr/bin/env bash
+# One visible server pane; the other live panes are parked in _servers.
+set -euo pipefail
+
+store=_servers
+holding=
+locked=false
+
+fail() {
+  printf 'tmux-servers: %s\n' "$*" >&2
+  exit 1
+}
+
+cleanup() {
+  # Only this script's temporary parking-session placeholder may be killed.
+  if [[ -n "$holding" ]]; then
+    tmux kill-pane -t "$holding" 2>/dev/null || true
+  fi
+  if "$locked"; then
+    tmux wait-for -U tmux-servers 2>/dev/null || true
+  fi
+}
+trap cleanup EXIT
+
+lock() {
+  tmux wait-for -L tmux-servers
+  locked=true
+}
+
+panel_window() {
+  local window id name
+  local -a candidates=()
+  window=$(tmux show-options -gqv @servers-window)
+  # display-message silently falls back to the current target for a missing
+  # pane/window. Enumerate real IDs instead of using it as an existence check.
+  while IFS=$'\t' read -r id name; do
+    if [[ "$id" == "$window" ]]; then
+      printf '%s\n' "$id"
+      return
+    fi
+    [[ "$name" != server-dev ]] || candidates+=("$id")
+  done < <(tmux list-windows -a -F '#{window_id}	#{window_name}' | sort -u)
+  # tmux-resurrect restores sessions/windows, but not our user options.
+  ((${#candidates[@]} == 1)) ||
+    fail 'Ingen entydig serverpanel finns. Kör tmux-servers setup i fönstret med servrarna.'
+  printf '%s\n' "${candidates[0]}"
+}
+
+panel_pane() {
+  local window=$1 pane
+  pane=$(tmux show-options -wqv -t "$window" @servers-pane)
+  if [[ -n "$pane" ]] && tmux list-panes -t "$window" -F '#{pane_id}' | grep -Fx -- "$pane" >/dev/null; then
+    printf '%s\n' "$pane"
+    return
+  fi
+  tmux display-message -p -t "$window" '#{pane_id}'
+}
+
+server_rows() {
+  local window pane id owner session name command dead registered state
+  window=$(panel_window)
+  pane=$(panel_pane "$window")
+  while IFS=$'\t' read -r id owner session name command dead registered; do
+    if [[ "$session" != "$store" && "$id" != "$pane" ]]; then
+      [[ "$owner" == "$window" && "$registered" == 1 ]] || continue
+    fi
+    state=$command
+    [[ "$dead" == 0 ]] || state=avslutad
+    [[ "$id" != "$pane" ]] || state="visas · $state"
+    printf '%s\t%s\t%s\n' "$id" "$name" "$state"
+  done < <(tmux list-panes -a -F '#{pane_id}	#{window_id}	#{session_name}	#{?@server-name,#{@server-name},#{b:pane_current_path}}	#{pane_current_command}	#{pane_dead}	#{?@server-name,1,0}') |
+    sort -t $'\t' -k2,2f
+}
+
+setup() {
+  lock
+  local keep=${1:-${TMUX_PANE:-}} window existing pane name old
+  [[ -n "$keep" ]] || fail 'Ange en pane, eller kör setup inifrån tmux.'
+  tmux list-panes -a -F '#{pane_id}' | grep -Fx -- "$keep" >/dev/null ||
+    fail "Pane '$keep' finns inte."
+  window=$(tmux display-message -p -t "$keep" '#{window_id}')
+  existing=$(tmux show-options -gqv @servers-window)
+  if [[ -n "$existing" && "$existing" != "$window" ]] &&
+    tmux list-windows -a -F '#{window_id}' | grep -Fx -- "$existing" >/dev/null; then
+    fail 'En serverpanel finns redan. Kör tmux-servers unpack innan du skapar en ny.'
+  fi
+  [[ $(tmux display-message -p -t "$keep" '#{session_name}') != "$store" ]] ||
+    fail 'Serverpanelen kan inte ligga i parkeringssessionen _servers.'
+
+  if [[ $(tmux show-options -wqv -t "$window" @servers-configured) != 1 ]]; then
+    for name in pane-border-status pane-border-format; do
+      old=$(tmux show-options -wqv -t "$window" "$name")
+      tmux set-option -w -t "$window" "@servers-old-$name" "$old"
+    done
+  fi
+  tmux set-option -g @servers-window "$window"
+  tmux set-option -w -t "$window" @servers-pane "$keep"
+  tmux set-option -w -t "$window" @servers-configured 1
+
+  local -a panes
+  mapfile -t panes < <(tmux list-panes -t "$window" -F '#{pane_id}')
+  for pane in "${panes[@]}"; do
+    name=$(tmux display-message -p -t "$pane" '#{?@server-name,#{@server-name},#{b:pane_current_path}}')
+    tmux set-option -p -t "$pane" @server-name "$name"
+    tmux select-pane -t "$pane" -T "$name"
+    [[ "$pane" != "$keep" ]] || continue
+    if ! tmux has-session -t "=$store" 2>/dev/null; then
+      holding=$(tmux new-session -d -P -F '#{pane_id}' -s "$store" -n _parking 'exec sleep infinity')
+    fi
+    tmux break-pane -d -s "$pane" -t "=$store:" -n "$name"
+  done
+  tmux select-pane -t "$keep"
+  tmux set-option -w -t "$window" pane-border-status top
+  tmux set-option -w -t "$window" pane-border-format ' #{?@server-name,#{@server-name},#{b:pane_current_path}}  │  Ctrl+s v: välj server '
+  printf 'Serverpanelen är klar. Ctrl+s, v öppnar serverlistan.\n'
+}
+
+show_server() {
+  lock
+  local query=$1 client=${2:-} window current id name state selected= session
+  local -a matches=()
+  window=$(panel_window)
+  current=$(panel_pane "$window")
+  while IFS=$'\t' read -r id name state; do
+    if [[ "$id" == "$query" || "$name" == "$query" ]]; then
+      selected=$id
+      break
+    fi
+    [[ "${name,,}" != *"${query,,}"* ]] || matches+=("$id")
+  done < <(server_rows)
+  if [[ -z "$selected" ]]; then
+    ((${#matches[@]} == 1)) || fail "'$query' matchar ${#matches[@]} servrar. Använd listan eller ett mer specifikt namn."
+    selected=${matches[0]}
+  fi
+  if [[ "$selected" != "$current" ]]; then
+    tmux swap-pane -d -s "$selected" -t "$current"
+  fi
+  tmux set-option -w -t "$window" @servers-pane "$selected"
+  tmux select-pane -t "$selected"
+  tmux select-window -t "$window"
+  session=$(tmux display-message -p -t "$window" '#{session_id}')
+  if [[ -z "$client" && -n "${TMUX_PANE:-}" ]]; then
+    client=$(tmux display-message -p -t "$TMUX_PANE" '#{client_name}')
+  fi
+  if [[ -n "$client" ]]; then
+    tmux switch-client -c "$client" -t "$session"
+  fi
+}
+
+pick() {
+  local selected status client=${1:-}
+  # Check before starting fzf, so a missing panel isn't an empty picker.
+  panel_window >/dev/null
+  if selected=$(server_rows | fzf --no-multi --layout=reverse --info=inline \
+    --delimiter=$'\t' --with-nth=2.. --prompt='Server > ' \
+    --header='Enter: visa server · Esc: avbryt · Ctrl+r: uppdatera förhandsvisning' \
+    --preview='tmux capture-pane -e -p -t {1} -S -120' \
+    --preview-window='right,65%,wrap' --bind='ctrl-r:refresh-preview'); then
+    show_server "${selected%%$'\t'*}" "$client"
+  else
+    status=$?
+    [[ "$status" == 1 || "$status" == 130 ]] || return "$status"
+  fi
+}
+
+menu() {
+  local client=${1:-} command
+  panel_window >/dev/null
+  [[ -n "$client" ]] || client=$(tmux display-message -p '#{client_name}')
+  [[ -n "$client" ]] || fail 'Ingen ansluten tmux-klient. Använd tmux-servers show NAMN.'
+  printf -v command '%q pick %q' "$0" "$client"
+  tmux display-popup -c "$client" -E -w 85% -h 80% -T ' Servrar ' "$command"
+}
+
+unpack() {
+  lock
+  local window current pane name owner old
+  window=$(panel_window)
+  current=$(panel_pane "$window")
+  local -a panes
+  mapfile -t panes < <(server_rows | cut -f1)
+  for pane in "${panes[@]}"; do
+    owner=$(tmux display-message -p -t "$pane" '#{window_id}')
+    [[ "$owner" != "$window" ]] || continue
+    tmux join-pane -d -s "$pane" -t "$current"
+    tmux select-layout -t "$window" tiled >/dev/null
+  done
+  for name in pane-border-status pane-border-format; do
+    old=$(tmux show-options -wqv -t "$window" "@servers-old-$name")
+    if [[ -n "$old" ]]; then
+      tmux set-option -w -t "$window" "$name" "$old"
+    else
+      tmux set-option -wu -t "$window" "$name"
+    fi
+    tmux set-option -wu -t "$window" "@servers-old-$name"
+  done
+  tmux set-option -wu -t "$window" @servers-pane
+  tmux set-option -wu -t "$window" @servers-configured
+  tmux set-option -gu @servers-window
+  printf 'Alla server-panes visas tillsammans igen. Inga processer har stoppats.\n'
+}
+
+case "${1:-menu}" in
+  setup) setup "${2:-}" ;;
+  menu) menu "${2:-}" ;;
+  pick) pick "${2:-}" ;;
+  list) server_rows ;;
+  show) [[ -n "${2:-}" ]] || fail 'Använd: tmux-servers show NAMN'; show_server "$2" "${3:-}" ;;
+  unpack) unpack ;;
+  *) fail 'Använd: tmux-servers {menu|list|show NAMN|setup [PANE]|unpack}' ;;
+esac
