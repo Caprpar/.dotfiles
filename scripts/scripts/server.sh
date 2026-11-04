@@ -18,8 +18,8 @@ if tmux-servers list >/dev/null 2>&1; then
   fail "En serverpanel finns redan. Använd Ctrl+s, v för att välja server."
 fi
 
-projects=(lx-api-server lx-booking lx-react-client lx-tenant-api inventory-engine lx-pesos lx-import-service)
-commands=('npm run dev' 'npm run dev:https' 'npm run dev:vite' 'npm run dev' 'npm start' "npm run dev" "npm start")
+projects=(lx-api-server lx-booking lx-react-client lx-tenant-api inventory-engine lx-pesos lx-import-service grandprix)
+commands=('npm run dev' 'npm run dev:https' 'npm run dev:vite' 'npm run dev' 'npm start' "npm run dev" "npm start" "npm run dev")
 
 for project in "${projects[@]}"; do
   [[ -f "$root/$project/package.json" ]] || fail "Saknar $root/$project/package.json."
