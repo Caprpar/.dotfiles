@@ -76,7 +76,7 @@ exec --no-startup-id nm-applet
 ###############################################################################
 
 bindsym $mod+b exec firefox-developer-edition
-bindsym $mod+p exec pastel --color-picker gpick pick | pastel format hex | xsel -b
+bindsym $mod+section exec pastel --color-picker gpick pick | pastel format hex | xsel -b
 bindsym $mod+n exec cd "/home/caspar/zettle/" && kitty nvim
 bindsym $mod+m exec kitty ~/.local/bin/scratch
 # bindsym $mod+x exec i3lock --nofork -c 222030 --tiling
@@ -87,7 +87,7 @@ bindsym $mod+Ctrl+j exec --no-startup-id python3 /home/caspar/.dotfiles/i3/.conf
 
 # Ctrl+Shift and the physical + key on the Swedish keyboard (Shift produces ?).
 # bindcode Ctrl+Shift+20 exec --no-startup-id /home/caspar/scripts/screenrec.sh
-bindsym $mod+y exec flameshot gui -c
+bindsym section exec flameshot gui -c
 bindsym $mod+shift+y exec flameshot gui --path ~/screenshots
 bindsym $mod+u exec flameshot gui --pin
 bindsym $mod+Shift+u exec --no-startup-id /home/caspar/scripts/flameshot-ocr.sh
