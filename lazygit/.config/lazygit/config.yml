@@ -1,3 +1,4 @@
+# darken capital colors by .3
 gui:
   theme:
     authorColors:
@@ -7,4 +8,4 @@ gui:
       'Felix Larsson': 9c99bf #9c99bf 
       'kristiannilsson': 754c4a #754c4a
       'Kristian Nilsson': f5bfaf #f5bfaf 
-      'Kenny Ek': d61edc #d61edc
+      'Kenny Ek': e76beb #e76beb
