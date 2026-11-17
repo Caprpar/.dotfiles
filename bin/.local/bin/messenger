@@ -1,0 +1,6 @@
+#!/bin/bash
+exec firefox-developer-edition \
+  --no-remote \
+  --profile "$HOME/.mozilla/firefox-kiosk" \
+  --class signal \
+  --kiosk https://www.messenger.com/
