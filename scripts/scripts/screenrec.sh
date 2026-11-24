@@ -35,6 +35,20 @@ get_monitor_source() {
   printf '%s.monitor\n' "$sink"
 }
 
+# A Bluetooth headset mic that is not in headset mode never delivers samples,
+# which makes ffmpeg block forever. Fall back to a built-in mic in that case.
+get_mic_source() {
+  local src
+  src="$(pactl get-default-source 2>/dev/null)"
+  if [ -z "$src" ] || [[ $src == bluez_* ]]; then
+    src="$(pactl list short sources 2>/dev/null | awk '$2 ~ /^alsa_input/ {print $2}' | sort | head -1)"
+    local mic1
+    mic1="$(pactl list short sources 2>/dev/null | awk '$2 ~ /^alsa_input.*Mic1/ {print $2; exit}')"
+    [ -n "$mic1" ] && src="$mic1"
+  fi
+  printf '%s\n' "${src:-default}"
+}
+
 pick_audio_mode() {
   local choice
   if command -v rofi >/dev/null 2>&1; then
@@ -91,8 +105,9 @@ start() {
   word="$(faker word 2>/dev/null | tr -cd '[:alpha:]' | tr '[:upper:]' '[:lower:]')"
   local file="$OUTDIR/$(date '+%Y-%m-%d_%H-%M-%S')_${word:-recording}.mkv"
 
-  local mode monitor
+  local mode monitor mic
   mode="${1:-quiet}"
+  mic="$(get_mic_source)"
 
   local -a audio_input_args=()
   local -a audio_output_args=(-an)
@@ -100,7 +115,7 @@ start() {
   quiet)
     ;;
   mic)
-    audio_input_args=(-thread_queue_size 4096 -f pulse -ac 1 -i default)
+    audio_input_args=(-thread_queue_size 4096 -f pulse -ac 1 -i "$mic")
     audio_output_args=(-af "highpass=f=80,volume=${MIC_GAIN},acompressor=threshold=${COMPRESSOR_THRESHOLD_DB}dB:ratio=${COMPRESSOR_RATIO}:attack=5:release=100,alimiter=limit=${LIMITER_LIMIT},aresample=async=1" -c:a libopus -b:a 128k)
     ;;
   "computer sound")
@@ -117,13 +132,14 @@ start() {
       return 1
     fi
     audio_input_args=(
-      -thread_queue_size 4096 -f pulse -ac 1 -i default
+      -thread_queue_size 4096 -f pulse -ac 1 -i "$mic"
       -thread_queue_size 4096 -f pulse -ac 2 -i "$monitor"
     )
     audio_output_args=(
-      -filter_complex "[1:a]highpass=f=80,volume=${MIC_MIX_GAIN}[a1];[2:a]volume=${SYSTEM_MIX_GAIN}[a2];[a1][a2]amix=inputs=2:duration=longest:dropout_transition=2,acompressor=threshold=${COMPRESSOR_THRESHOLD_DB}dB:ratio=${MIX_COMPRESSOR_RATIO}:attack=5:release=120,alimiter=limit=${LIMITER_LIMIT},aresample=async=1[aout]"
-      -map 0:v -map "[aout]"
+      -filter_complex "[1:a]highpass=f=80,volume=${MIC_GAIN},acompressor=threshold=${COMPRESSOR_THRESHOLD_DB}dB:ratio=${COMPRESSOR_RATIO}:attack=5:release=100,alimiter=limit=${LIMITER_LIMIT},aresample=async=1[mic];[2:a]volume=${SYSTEM_MIX_GAIN},alimiter=limit=${LIMITER_LIMIT},aresample=async=1[sys]"
+      -map 0:v -map "[mic]" -map "[sys]"
       -c:a libopus -b:a 128k
+      -metadata:s:a:0 title=Mic -metadata:s:a:1 title="Computer sound"
     )
     ;;
   *)
@@ -136,7 +152,7 @@ start() {
   setsid ffmpeg -nostdin -loglevel warning \
     -thread_queue_size 1024 -video_size "$size" -framerate 25 -f x11grab -i "${DISPLAY:-:0.0}+$offset" \
     "${audio_input_args[@]}" \
-    -c:v libx264 -preset ultrafast -crf 23 \
+    -c:v libx264 -preset ultrafast -crf 23 -pix_fmt yuv420p \
     "${audio_output_args[@]}" \
     "$file" >/tmp/screenrec.log 2>&1 &
   echo $! >"$PIDFILE"
