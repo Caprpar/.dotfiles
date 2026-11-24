@@ -42,6 +42,8 @@ tiling_drag modifier titlebar
 # and authorization file. The user systemd manager may predate this login.
 exec --no-startup-id sh -c 'systemctl --user import-environment DISPLAY XAUTHORITY && systemctl --user start tmux.service'
 exec --no-startup-id /home/caspar/.config/i3/setup-monitors.sh
+exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+exec_always --no-startup-id xrdb -merge .Xresources 
 exec_always --no-startup-id feh --bg-scale ~/wallpapers/cow-field.jpg
 exec_always --no-startup-id /home/caspar/.config/polybar/launch.sh
 exec_always xset r rate 200 60 &
@@ -80,8 +82,9 @@ bindsym $mod+section exec pastel --color-picker gpick pick | pastel format hex |
 bindsym $mod+n exec cd "/home/caspar/zettle/" && kitty nvim
 bindsym $mod+m exec kitty ~/.local/bin/scratch
 # bindsym $mod+x exec i3lock --nofork -c 222030 --tiling
-bindsym $mod+x exec i3lock --nofork -i ~/wallpapers/cbonsai.png -k
-bindsym $mod+Ctrl+l exec rm ~/Documents/prunk.png && flameshot full --path ~/Documents/prunk.png && i3lock --nofork -i ~/Documents/prunk.png -k
+# bindsym $mod+x exec i3lock --nofork -i ~/wallpapers/cbonsai.png -k
+bindsym $mod+x exec i3lock --nofork -c 222030 --tiling
+# bindsym $mod+Ctrl+l exec rm ~/Documents/prunk.png && flameshot full --path ~/Documents/prunk.png && i3lock --nofork -i ~/Documents/prunk.png -k
 bindsym $mod+Ctrl+j exec --no-startup-id python3 /home/caspar/.dotfiles/i3/.config/i3/new_humbug_json.py
 # bindsym $mod+Ctrl+l exec i3lock --nofork -i ~/wallpapers/fingerprint.png -k
 
@@ -116,6 +119,8 @@ bindsym $mod+shift+d exec --no-startup-id /home/caspar/.local/bin/dmenu-claude
 # key § toggles language
 # bindcode 49 exec "setxkbmap -query | grep -q 'layout:.*se' && { setxkbmap us -option ctrl:nocaps; notify-send '🇺🇸 Keyboard' 'Switched to US'; } || { setxkbmap se -option ctrl:nocaps; notify-send '🇸🇪 Keyboard' 'Switched to SE'; }"
 bindsym $mod+t exec xprop | grep WM_CLASS | xsel -b && notify-send "Pasted windowsclass to clipboard"
+# Disable touchpad While Typing Enabled
+bindsym $mod+Shift+t exec xinput set-prop 11 "libinput Disable While Typing Enabled" 0
 
 # muscle-memory retraining: notify if the physical Ctrl key is pressed (use CapsLock instead)
 # bound by keycode (not keysym) since ctrl:nocaps makes CapsLock emit Control_L/R too
