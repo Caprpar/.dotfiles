@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Show the latest assigned Jira ticket with the exact "In Progress" status.
+# Show all assigned Jira tickets with the exact "In Progress" status.
 set -euo pipefail
 umask 077
 
@@ -39,15 +39,15 @@ if ! ticket_data=$(
       else
         (.data.issues) as $issues
         | (
-            ($issues[0] // empty)
-            | if (.url // "" | test("^https://[^[:space:]]+$")) then
-                "[\(.key)]"
-                # Keep the key on one line and prevent Polybar formatting tags.
-                | gsub("[[:cntrl:]]"; " ")
-                | gsub("%\\{"; "% {")
-              else
-                ""
-              end
+            [
+              $issues[]
+              | select(.url // "" | test("^https://[^[:space:]]+$"))
+              | .key
+              # Keep keys on one line and prevent Polybar formatting tags.
+              | gsub("[[:cntrl:]]"; " ")
+              | gsub("%\\{"; "% {")
+            ]
+            | if length > 0 then "[" + join(", ") + "]" else "" end
           ) as $label
         | (
             $issues
